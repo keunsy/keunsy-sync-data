@@ -1,0 +1,3 @@
+1.本项目为同步程序订阅段，主要功能为接收发布端程序存储到redis中的数据并进行相关同步操作
+2.协同程序：syncDataPublisher
+3.为避免重复修改，相关文档以及sql文件请阅读syncDataPublisher中的内容

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<util:properties id="threadsCfg" location="file:${user.dir}/config/threads.properties"/>
+	<util:properties id="beanColumn" location="file:${user.dir}/config/beanColumn.properties"/>
+	<util:properties id="beanTable" location="file:${user.dir}/config/beanTable.properties"/>
+
+	<context:property-placeholder
+		location="file:${user.dir}/config/source.properties" />
+	<context:annotation-config />
+	<context:component-scan base-package="com.keunsy" />
+
+	<!-- 数据源 -->
+	<bean id="templateDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close" abstract="true">
+		<property name="driverClassName" value="${db.driverClassName}" />
+		<property name="validationQuery" value="SELECT 1" />
+		<property name="testOnBorrow" value="true" />
+		<property name="timeBetweenEvictionRunsMillis" value="${db.timeBetweenEvictionRunsMillis}" />
+		<property name="numTestsPerEvictionRun" value="${db.numTestsPerEvictionRun}" />
+		<property name="minEvictableIdleTimeMillis" value="${db.minEvictableIdleTimeMillis}" />
+	</bean>
+
+	<bean id="dataSource" parent="templateDataSource">
+		<property name="username" value="${db.username}" />
+		<property name="password" value="${db.password}" />
+		<property name="url" value="${db.url}" />
+	</bean>
+
+	<!-- redis哨兵配置（与单机只能使用其中一个） -->
+   <!-- <bean id="redisSource" clacom.keunsysykeunsy.redis.RedisSentinelAdapter"
+		init-method="initPool">
+		<property name="redis_host" value="${redis.redis_host}" />
+		<property name="redis_time_out" value="${redis.redis_time_out}" />
+		<property name="master_name" value="${redis.master_name}" />
+	</bean>  -->
+	
+	<!-- redis单机配置（与哨兵只能使用其中一个） -->
+	<bean id="redisSource" class="com.keunsy.syncdata.publisher.redis.RedisSingelAdapter" init-method="initPool">
+		<property name="redisServerIp" value="${redis.serverIp}" />
+		<property name="redisServerPort" value="${redis.serverPort}" />
+		<property name="maxTotal" value="${redis.maxTotal}" />
+		<property name="maxIdle" value="${redis.maxIdle}" />
+		<property name="maxWaitMillis" value="${redis.maxWaitMillis}"/>
+		<property name="testOnBorrow" value="true"/>
+	</bean> 
+	
+	<!-- redis 参数中心初始化 传入数据库url-->
+		<!-- redis 参数中心初始化 传入数据库url-->
+	<bean id="redisCfgCenter" class="com.keunsy.syncdata.publisher.dataCenter.RedisCfgCenter" init-method="initCfg">
+		<property name="SYNC_SERVER" value="${cfg.syncServer}" />
+		<property name="configMap">
+			<map>
+				<entry key="" value=""/>
+			</map>
+		</property>
+	</bean>
+
+
+</beans>

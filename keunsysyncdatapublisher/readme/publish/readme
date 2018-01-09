@@ -1,0 +1,8 @@
+部署说明：
+1.将项目打成jar包(无用的文件不勾选)，注意勾选add directory entries，否则注解及配置文件无法被加载
+2.将除src外的其他文件与shutdown.sh及startup.sh放在同一个文件中，并将1中的jar包放入lib中
+3.将startup.sh中 program="MainServer"改为项目主程序类
+4.将 shutdown.sh中的java -Djava.ext.dirs=lib -cp . com.keunsy.oneutil.OneObjectUtil改为项目的关闭程序类
+
+5.项目启动 ：切换到startup.sh所在目录 执行 sh startup.sh && tail -f nohup.out
+6.项目关闭：执行sh shutdown.sh
